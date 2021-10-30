@@ -11,4 +11,4 @@ import { MobileCardComponent } from './mobile-card/mobile-card.component';
   imports: [MatExpansionModule, CommonModule, FlexLayoutModule],
   providers: [DatePipe],
 })
-export class ResponsiveTable {}
+export class ResponsiveTableModule {}
