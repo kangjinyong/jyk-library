@@ -1,0 +1,34 @@
+<div class="mobile-card__container">
+  <div class="mobile-card__header-container">
+    <span *ngIf="column?.headerName">{{ column?.headerName }}</span>
+  </div>
+  <div class="mobile-card__field-container">
+    <ng-container
+      *ngIf="column?.overrideRef; else defaultTemplateRef"
+      [ngTemplateOutlet]="column?.overrideRef || null"
+      [ngTemplateOutletContext]="{ $implicit: dataRow }"
+    >
+    </ng-container>
+    <ng-template #defaultTemplateRef>
+      <ng-container
+        *ngIf="
+          !!dataRow[column?.fieldName || ''] ||
+          dataRow[column?.fieldName || ''] === 0
+        "
+      >
+        <span *ngIf="column?.dataType === 'string'">{{
+          dataRow[column?.fieldName || ""]
+        }}</span>
+        <span *ngIf="column?.dataType === 'number'">{{
+          dataRow[column?.fieldName || ""] | number: "1.0-9"
+        }}</span>
+        <span *ngIf="column?.dataType === 'amount'">{{
+          dataRow[column?.fieldName || ""] | number: "1.2-2"
+        }}</span>
+        <span *ngIf="column?.dataType === 'date'">{{
+          dataRow[column?.fieldName || ""] | date: column?.dateFormat
+        }}</span>
+      </ng-container>
+    </ng-template>
+  </div>
+</div>

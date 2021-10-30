@@ -26,6 +26,7 @@
   "prettier.jsxBracketSameLine": true,
   "prettier.bracketSpacing": true,
   "prettier.proseWrap": "always",
+  "prettier.printWidth": 150,
   "prettier.singleQuote": true,
   "prettier.jsxSingleQuote": true,
   "javascript.preferences.importModuleSpecifier": "relative",

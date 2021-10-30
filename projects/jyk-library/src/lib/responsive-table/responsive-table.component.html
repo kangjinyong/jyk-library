@@ -1,0 +1,99 @@
+<div class="responsive-table">
+  <span>{{ getViewedRecordsRange() }}</span>
+  <div class="responsive-table__data-container">
+    <div class="responsive-table__header-container">
+      <ng-container *ngIf="hasCollapsibleColumns || !isMobile; else mobileHeaderTemplateRef">
+        <div class="responsive-table__sub-header-container">
+          <div
+            *ngFor="let child of displayedColumns"
+            [ngClass]="{
+              'responsive-table__header-field-container': true,
+              'responsive-table__header-field-container__standard': child.dataType !== 'amount',
+              'responsive-table__header-field-container__amount': child.dataType === 'amount',
+              'responsive-table__header-field-container__sortable': child.sortable && child.fieldName
+            }"
+            (click)="sortColumn(child.sortable, child.fieldName || '', child.dataType, child.curSortDir)"
+          >
+            <span
+              [ngClass]="{
+                'responsive-table__header-field-container-child': true,
+                'responsive-table__text-align-right': child.dataType === 'amount'
+              }"
+            >
+              {{ child.headerName || '' }}
+            </span>
+          </div>
+        </div>
+        <div *ngIf="isCollapsed()" class="responsive-table__header-expansion-indicator"></div>
+      </ng-container>
+      <ng-template #mobileHeaderTemplateRef>
+        <div class="responsive-table__header-field-mobile">
+          <span>Record</span>
+        </div>
+      </ng-template>
+    </div>
+    <mat-accordion [multi]="true">
+      <ng-container *ngIf="hasDataOnDisplay(); else noRecordsTemplateRef">
+        <ng-container *ngFor="let row of sortedData">
+          <mat-expansion-panel *ngIf="row.onCurrentPage" class="responsive-table__panel">
+            <mat-expansion-panel-header>
+              <div *ngIf="hasCollapsibleColumns || !isMobile; else mobileDataTemplateRef" class="responsive-table__row-container">
+                <div
+                  *ngFor="let child of displayedColumns"
+                  [style.width]="((child.columnWidth || 0) / totalWidth) * 100"
+                  [ngClass]="{
+                    'responsive-table__row-field-container': true,
+                    'responsive-table__row-field-container__standard': child.dataType !== 'amount',
+                    'responsive-table__row-field-container__amount': child.dataType === 'amount',
+                    'responsive-table__row-no-wrap': !child.wrapWhiteSpace
+                  }"
+                >
+                  <ng-container
+                    *ngIf="child.overrideRef; else defaultTemplateRef"
+                    [ngTemplateOutlet]="child.overrideRef"
+                    [ngTemplateOutletContext]="{ $implicit: row.data }"
+                  ></ng-container>
+                  <ng-template #defaultTemplateRef>
+                    <ng-container *ngIf="!!row.data[child.fieldName || '']">
+                      <span *ngIf="child.dataType === 'string'">{{ row.data[child.fieldName || ''] }}</span>
+                      <span *ngIf="child.dataType === 'number'">{{ row.data[child.fieldName || ''] | number: '1.0-9' }}</span>
+                      <span *ngIf="child.dataType === 'amount'">{{ row.data[child.fieldName || ''] | number: '1.2-2' }}</span>
+                      <span *ngIf="child.dataType === 'date'">{{ row.data[child.fieldName || ''] | date: child.dateFormat }}</span>
+                    </ng-container>
+                  </ng-template>
+                </div>
+              </div>
+              <ng-template #mobileDataTemplateRef>
+                <div class="responsive-table__mobile-data-container">
+                  <ng-container *ngFor="let child of columnChildren">
+                    <mobile-card
+                      *ngIf="child.overrideRef || row.data[child.fieldName || ''] || row.data[child.fieldName || ''] === 0"
+                      [dataRow]="row.data"
+                      [column]="child"
+                    ></mobile-card>
+                  </ng-container>
+                </div>
+              </ng-template>
+            </mat-expansion-panel-header>
+            <div class="responsive-table__card-container">
+              <div class="responsive-table__card-field-container">
+                <ng-container *ngFor="let child of collapsedColumns">
+                  <mobile-card
+                    *ngIf="child.overrideRef || row.data[child.fieldName || ''] || row.data[child.fieldName || ''] === 0"
+                    [dataRow]="row.data"
+                    [column]="child"
+                  ></mobile-card>
+                </ng-container>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </ng-container>
+      </ng-container>
+      <ng-template #noRecordsTemplateRef>
+        <mat-expansion-panel [disabled]="true" class="responsive-table__panel">
+          <mat-expansion-panel-header><span>No records available</span></mat-expansion-panel-header>
+        </mat-expansion-panel>
+      </ng-template>
+    </mat-accordion>
+  </div>
+</div>
