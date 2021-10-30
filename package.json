@@ -1,6 +1,6 @@
 {
   "name": "jyk-library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Components built on top of Angular Material",
   "main": "index.js",
   "scripts": {
