@@ -1,5 +1,5 @@
 <div class="responsive-table">
-  <span>{{ getViewedRecordsRange() }}</span>
+  <span class="responsive-table__records-range">{{ getViewedRecordsRange() }}</span>
   <div class="responsive-table__data-container">
     <div class="responsive-table__header-container">
       <ng-container *ngIf="hasCollapsibleColumns || !isMobile; else mobileHeaderTemplateRef">
@@ -13,6 +13,7 @@
               'responsive-table__header-field-container__sortable': child.sortable && child.fieldName
             }"
             (click)="sortColumn(child.sortable, child.fieldName || '', child.dataType, child.curSortDir)"
+            [style.width.%]="((child.columnWidth || 0) / totalWidth) * 100"
           >
             <span
               [ngClass]="{
@@ -22,6 +23,9 @@
             >
               {{ child.headerName || '' }}
             </span>
+            <span *ngIf="child.curSortDir === 'asc'" class="responsive-table__header-field-container-child">↑</span>
+            <span *ngIf="child.curSortDir === 'desc'" class="responsive-table__header-field-container-child">↓</span>
+            <span *ngIf="child.curSortDir === 'none'" class="responsive-table__header-field-container-child">↕</span>
           </div>
         </div>
         <div *ngIf="isCollapsed()" class="responsive-table__header-expansion-indicator"></div>
@@ -35,12 +39,12 @@
     <mat-accordion [multi]="true">
       <ng-container *ngIf="hasDataOnDisplay(); else noRecordsTemplateRef">
         <ng-container *ngFor="let row of sortedData">
-          <mat-expansion-panel *ngIf="row.onCurrentPage" class="responsive-table__panel">
+          <mat-expansion-panel *ngIf="row.onCurrentPage" class="responsive-table__panel" [disabled]="!isCollapsed() || !hasCollapsibleColumns">
             <mat-expansion-panel-header>
               <div *ngIf="hasCollapsibleColumns || !isMobile; else mobileDataTemplateRef" class="responsive-table__row-container">
                 <div
                   *ngFor="let child of displayedColumns"
-                  [style.width]="((child.columnWidth || 0) / totalWidth) * 100"
+                  [style.width.%]="((child.columnWidth || 0) / totalWidth) * 100"
                   [ngClass]="{
                     'responsive-table__row-field-container': true,
                     'responsive-table__row-field-container__standard': child.dataType !== 'amount',
@@ -66,25 +70,25 @@
               <ng-template #mobileDataTemplateRef>
                 <div class="responsive-table__mobile-data-container">
                   <ng-container *ngFor="let child of columnChildren">
-                    <mobile-card
+                    <table-mobile
+                      class="responsive-table__mobile-card"
                       *ngIf="child.overrideRef || row.data[child.fieldName || ''] || row.data[child.fieldName || ''] === 0"
                       [dataRow]="row.data"
                       [column]="child"
-                    ></mobile-card>
+                    ></table-mobile>
                   </ng-container>
                 </div>
               </ng-template>
             </mat-expansion-panel-header>
-            <div class="responsive-table__card-container">
-              <div class="responsive-table__card-field-container">
-                <ng-container *ngFor="let child of collapsedColumns">
-                  <mobile-card
-                    *ngIf="child.overrideRef || row.data[child.fieldName || ''] || row.data[child.fieldName || ''] === 0"
-                    [dataRow]="row.data"
-                    [column]="child"
-                  ></mobile-card>
-                </ng-container>
-              </div>
+            <div class="responsive-table__mobile-data-container">
+              <ng-container *ngFor="let child of collapsedColumns">
+                <table-mobile
+                  class="responsive-table__mobile-card"
+                  *ngIf="child.overrideRef || row.data[child.fieldName || ''] || row.data[child.fieldName || ''] === 0"
+                  [dataRow]="row.data"
+                  [column]="child"
+                ></table-mobile>
+              </ng-container>
             </div>
           </mat-expansion-panel>
         </ng-container>
@@ -96,4 +100,6 @@
       </ng-template>
     </mat-accordion>
   </div>
+  <table-paginator *ngIf="totalPages > 1" [currentPage]="currentPage" [totalPages]="totalPages" [pageRange]="pageRange" (goToPage)="goToPage($event)">
+  </table-paginator>
 </div>

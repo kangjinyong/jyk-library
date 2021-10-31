@@ -20,7 +20,7 @@ import { MOBILE_WIDTH, BREAKPOINTS_MAP, PAGE_SIZE, SORT_MAP } from './responsive
 import { ColumnComponent } from './column/column.component';
 
 @Component({
-  selector: 'responsive-table',
+  selector: 'jyk-table',
   templateUrl: './responsive-table.component.html',
   styleUrls: ['./responsive-table.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
@@ -37,6 +37,7 @@ export class ResponsiveTableComponent implements OnInit, AfterViewInit, AfterCon
       : [];
     this.updateTableOnDataChange();
   }
+  @Input() pageSize = PAGE_SIZE;
   @Input() openPanels: Observable<boolean> | undefined;
   @Output() collapsed: EventEmitter<boolean> = new EventEmitter<boolean>();
   @ContentChildren(ColumnComponent) columnChildren: QueryList<ColumnComponent> | undefined;
@@ -56,7 +57,6 @@ export class ResponsiveTableComponent implements OnInit, AfterViewInit, AfterCon
   private openPanelsSubscription: Subscription = Subscription.EMPTY;
   private visibleColumnCount = 0;
   private widthHundred = 0;
-  private pageSize = PAGE_SIZE;
   private mobileWidth = MOBILE_WIDTH;
   private breakpointsMap = BREAKPOINTS_MAP;
   private sortMap = SORT_MAP;
@@ -119,14 +119,27 @@ export class ResponsiveTableComponent implements OnInit, AfterViewInit, AfterCon
   }
 
   sortColumn(sortable: boolean, field: string, type: 'string' | 'number' | 'amount' | 'date', curSortDir: 'none' | 'asc' | 'desc'): void {
-    if (sortable && field) {
+    if (sortable && field && this.sortMap.get(curSortDir)) {
       const newDir = this.sortMap.get(curSortDir) || 'asc';
       this.sort(field, type, newDir);
       this.updateSortDirection(field, newDir);
     }
   }
 
-  private updateTableOnDataChange(): void {}
+  private updateTableOnDataChange(): void {
+    if (this.sortedData && this.sortedData.length > 0) {
+      this.currentPage = 1;
+      this.totalPages = Math.ceil(this.sortedData.length / this.pageSize);
+      this.calculateCurrentPageData();
+      this.calculatePageRange();
+      if (this.columnChildren) {
+        const curSortColumn: ColumnComponent | undefined = this.columnChildren.find((c) => c.curSortDir && c.curSortDir !== 'none');
+        if (curSortColumn) {
+          this.sort(curSortColumn.fieldName || '', curSortColumn.dataType || 'string', curSortColumn.curSortDir || 'asc');
+        }
+      }
+    }
+  }
 
   private calculateVisibleColumnCount(width: number): void {
     if (this.widthHundred !== Math.floor(width / 100)) {
@@ -163,7 +176,7 @@ export class ResponsiveTableComponent implements OnInit, AfterViewInit, AfterCon
   private calculatePageRange(): void {
     if (this.totalPages > 1) {
       this.pageRange = [...Array(Math.min(this.totalPages - Math.floor((this.currentPage - 1) / 10) * 10, 10)).keys()].map((p) => {
-        const num = p + 1 + Math.floor(((this.currentPage - 1) / 10) * 10);
+        const num = p + 1 + Math.floor((this.currentPage - 1) / 10) * 10;
         return { text: String(num), value: num };
       });
       if (this.pageRange[9] && this.pageRange[9].value < this.totalPages) {
@@ -182,7 +195,7 @@ export class ResponsiveTableComponent implements OnInit, AfterViewInit, AfterCon
         break;
       }
       case 'desc': {
-        this.sortByType(field, type);
+        this.sortByType(field, type, true);
         break;
       }
       default: {

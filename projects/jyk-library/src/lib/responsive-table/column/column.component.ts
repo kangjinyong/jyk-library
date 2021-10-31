@@ -1,7 +1,7 @@
 import { Component, ContentChild, Input, TemplateRef } from '@angular/core';
 
 @Component({
-  selector: 'column',
+  selector: 'jyk-table-column',
   template: '',
   styleUrls: [],
 })

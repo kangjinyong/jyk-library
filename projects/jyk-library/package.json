@@ -1,6 +1,7 @@
 {
   "name": "jyk-library",
-  "version": "1.0.1",
+  "version": "1.0.3",
+  "description": "Components built on top of Angular Material",
   "peerDependencies": {
     "@angular/common": "^12.2.0",
     "@angular/core": "^12.2.0",
@@ -9,5 +10,15 @@
   },
   "dependencies": {
     "tslib": "^2.3.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kangjinyong/jyk-library.git"
+  },
+  "author": "Kang Jin Yong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kangjinyong/jyk-library/issues"
+  },
+  "homepage": "https://github.com/kangjinyong/jyk-library#readme"
 }

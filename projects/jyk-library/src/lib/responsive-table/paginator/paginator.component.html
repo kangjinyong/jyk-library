@@ -1,0 +1,37 @@
+<div class="paginator__container">
+  <div class="paginator__buttons-container">
+    <div
+      [ngClass]="{
+        'paginator__buttons-container-child': true,
+        'paginator__first-page': currentPage !== 1,
+        'paginator__first-page-disabled': currentPage === 1
+      }"
+      (click)="goToPage.next(1)"
+    >
+      <span>&laquo;</span>
+    </div>
+    <ng-container *ngFor="let page of pageRange">
+      <div
+        [ngClass]="{
+          'paginator__buttons-container-child': true,
+          'paginator__page-number': currentPage !== page.value,
+          'paginator__page-number-selected': currentPage === page.value
+        }"
+        (click)="goToPage.next(page.value)"
+      >
+        <span>{{ page.text }}</span>
+      </div>
+    </ng-container>
+    <div
+      [ngClass]="{
+        'paginator__buttons-container-child': true,
+        'paginator__last-page': currentPage !== totalPages,
+        'paginator__last-page-disabled': currentPage === totalPages
+      }"
+      (click)="goToPage.next(totalPages)"
+    >
+      <span>&raquo;</span>
+    </div>
+  </div>
+  <span class="paginator__current-page-text">Page {{ currentPage }} of {{ totalPages }}</span>
+</div>

@@ -2,4 +2,6 @@
  * Public API Surface of jyk-library
  */
 
-export { ResponsiveTableModule } from './lib/responsive-table/responsive-table.module';
+export * from './lib/responsive-table/responsive-table.component';
+export * from './lib/responsive-table/column/column.component';
+export * from './lib/responsive-table/responsive-table.module';
