@@ -4,5 +4,5 @@ This project is where I work on components which I find useful in various applic
 
 # Getting Started
 
-Refer to below StackBlitz link on how to use the library.
+Refer to StackBlitz link on how to use the library.
 https://stackblitz.com/edit/angular-ivy-dpmnpu?
